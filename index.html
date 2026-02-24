@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Retro 8-bit 1v1 fighting game for two players on one keyboard."
+    />
+    <title>Pixel Duel 1v1</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell" aria-label="Pixel Duel game">
+      <h1>PIXEL DUEL</h1>
+      <p class="instructions">
+        P1: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> + <kbd>E</kbd> attack | P2:
+        <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> + <kbd>K</kbd> attack
+      </p>
+
+      <canvas id="game" width="900" height="500" role="img" aria-label="1v1 fighting arena"></canvas>
+
+      <section class="hud" aria-live="polite">
+        <p>Player 1 HP: <span id="p1-health">100</span></p>
+        <p>Player 2 HP: <span id="p2-health">100</span></p>
+      </section>
+
+      <p id="state" class="state">Fight! Press Enter after a KO for rematch.</p>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>
