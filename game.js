@@ -36,6 +36,7 @@ function makePlayer(options) {
     attackHitDone: false,
     hurtTimer: 0,
     ko: false,
+    blocking: false,
   };
 }
 
@@ -117,10 +118,17 @@ function startAttack(attacker) {
 }
 
 function takeHit(defender, attacker) {
-  defender.health -= 12;
-  defender.hurtTimer = 10;
-  defender.vx = attacker.facing * 3.4;
-  defender.vy = -3.3;
+  if (defender.blocking && defender.onGround) {
+    defender.health -= 3;
+    defender.hurtTimer = 4;
+    defender.vx = attacker.facing * 1.1;
+    defender.vy = -1.2;
+  } else {
+    defender.health -= 12;
+    defender.hurtTimer = 10;
+    defender.vx = attacker.facing * 3.4;
+    defender.vy = -3.3;
+  }
 
   if (defender.health <= 0) {
     defender.ko = true;
@@ -134,21 +142,29 @@ function takeHit(defender, attacker) {
 }
 
 function updatePlayer(player, leftKey, rightKey) {
+  player.blocking = false;
+  if (player.id === 1 && keysDown.has("KeyR") && !player.ko) {
+    player.blocking = true;
+  }
+  if (player.id === 2 && keysDown.has("KeyL") && !player.ko) {
+    player.blocking = true;
+  }
+
   if (player.ko) {
     player.vx *= 0.9;
   } else {
     player.vx = 0;
-    if (keysDown.has(leftKey)) {
+    if (!player.blocking && keysDown.has(leftKey)) {
       player.vx = -MOVE_SPEED;
       player.facing = -1;
     }
-    if (keysDown.has(rightKey)) {
+    if (!player.blocking && keysDown.has(rightKey)) {
       player.vx = MOVE_SPEED;
       player.facing = 1;
     }
   }
 
-  if (player.jumpQueued && player.onGround && !player.ko) {
+  if (player.jumpQueued && player.onGround && !player.ko && !player.blocking) {
     player.vy = JUMP_FORCE;
     player.onGround = false;
   }
@@ -261,6 +277,12 @@ function drawFighter(player) {
   ctx.fillStyle = player.colorAccent;
   ctx.fillRect(x + 9, y + 24, 22, 5);
   ctx.fillRect(x + 10, y + 36, 20, 8);
+
+  if (player.blocking) {
+    const shieldX = player.facing === 1 ? x + player.w : x - 8;
+    ctx.fillStyle = "#93c5fd";
+    ctx.fillRect(shieldX, y + 14, 8, 34);
+  }
 
   if (player.attackTimer > 0) {
     const box = getAttackBox(player);
